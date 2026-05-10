@@ -30,3 +30,7 @@ Technologies Used:
 - NLTK
 
 The model was trained and evaluated using customer review data to predict sentiments accurately.
+
+*OUTPUT*:
+
+<img width="696" height="581" alt="Image" src="https://github.com/user-attachments/assets/f333ce78-ca1c-4e45-92a7-424d77e307ef" />
