@@ -1,0 +1,90 @@
+!pip install pandas numpy scikit-learn nltk
+import pandas as pd
+import numpy as np
+import re
+import nltk
+
+from nltk.corpus import stopwords
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report
+nltk.download('stopwords')
+data = {
+    'Review': [
+        'This product is amazing',
+        'I love this item',
+        'Very bad experience',
+        'Worst product ever',
+        'Excellent quality',
+        'Not worth the money',
+        'Absolutely fantastic',
+        'Terrible customer service',
+        'Highly recommended',
+        'I hate this product'
+    ],
+
+    'Sentiment': [
+        'Positive',
+        'Positive',
+        'Negative',
+        'Negative',
+        'Positive',
+        'Negative',
+        'Positive',
+        'Negative',
+        'Positive',
+        'Negative'
+    ]
+}
+
+df = pd.DataFrame(data)
+
+df.head()
+stop_words = set(stopwords.words('english'))
+
+def preprocess_text(text):
+
+    text = text.lower()
+
+    text = re.sub(r'[^a-zA-Z]', ' ', text)
+
+    words = text.split()
+
+    words = [word for word in words if word not in stop_words]
+
+    return ' '.join(words)
+
+df['Cleaned_Review'] = df['Review'].apply(preprocess_text)
+
+df.head()
+tfidf = TfidfVectorizer()
+
+X = tfidf.fit_transform(df['Cleaned_Review'])
+
+y = df['Sentiment']
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+model = LogisticRegression()
+
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+
+print("Accuracy:", accuracy)
+
+print("\nClassification Report:\n")
+
+print(classification_report(y_test, y_pred))
+review = ["Excellent quality and amazing product"]
+
+review_clean = [preprocess_text(r) for r in review]
+
+review_vector = tfidf.transform(review_clean)
+
+prediction = model.predict(review_vector)
+
+prediction[0] = "Positive"
+
+print("Sentiment:", prediction[0])
